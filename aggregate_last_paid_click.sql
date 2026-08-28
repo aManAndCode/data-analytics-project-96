@@ -77,28 +77,27 @@ visits_agg AS (
 
 costs_agg AS (
     SELECT
-        campaign_date AS visit_date,
+        CAST(campaign_date AS date) AS visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
         SUM(daily_spent) AS total_cost
-    FROM (
-        SELECT
-            campaign_date,
-            utm_source,
-            utm_medium,
-            utm_campaign,
-            daily_spent
-        FROM vk_ads
-        UNION ALL
-        SELECT
-            campaign_date,
-            utm_source,
-            utm_medium,
-            utm_campaign,
-            daily_spent
-        FROM ya_ads
-    ) AS all_costs
+    FROM vk_ads
+    GROUP BY
+        campaign_date,
+        utm_source,
+        utm_medium,
+        utm_campaign
+
+    UNION ALL
+
+    SELECT
+        CAST(campaign_date AS date) AS visit_date,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+        SUM(daily_spent) AS total_cost
+    FROM ya_ads
     GROUP BY
         campaign_date,
         utm_source,
